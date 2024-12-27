@@ -13,6 +13,8 @@ function Hero() {
                         </h1>
                         <p className="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
                             DailyPath is your personalized routine tracker. It helps you stay on track with your personal routines, manage milestones, and monitor your progress in a simple and effective way.
+                        <p className="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+                            DailyPath is your personalized routine tracker. It helps you stay on track with your personal routines, manage milestones, and monitor your progress in a simple and effective way.
                         </p>
                         <NavLink
                             to="/routines"
@@ -33,6 +35,8 @@ function Hero() {
                             </svg>
                         </NavLink>
                     </div>
+                    <div className="hidden lg:mt-0 lg:col-span-5 lg:flex">
+                        <img
                     <div className="hidden lg:mt-0 lg:col-span-5 lg:flex">
                         <img
                             className="hidden object-cover object-center rounded md:block"
