@@ -4,14 +4,11 @@ const routines = require('../db/migration/routinesTable');
 const createMilestonesTable = require('../db/migration/milestonesTable');
 const createStepsTable = require('../db/migration/stepsTable');
 
-// Controller to handle adding a routine
 const addRoutine = async (req, res) => {
     const { routineName, routineType, duration, milestones, steps, routineDescription } = req.body;
 
-    // Validate required fields
-    if (!routineName || !routineType || !duration || !routineDescription || !milestones || !steps) {
-        return res.status(400).json({ message: 'All fields are required' });
-    }
+    // Ensure 'steps' is an array or default to an empty array
+    const stepsArray = Array.isArray(steps) ? steps : [];
 
     try {
         // Check if the routines table exists
@@ -49,7 +46,7 @@ const addRoutine = async (req, res) => {
             const milestoneId = milestoneResult.rows[0].id;
 
             // Insert the steps for each milestone into the steps table
-            for (let step of steps) {
+            for (let step of stepsArray) {
                 await client.query(
                     'INSERT INTO steps (milestone_id, step) VALUES ($1, $2)',
                     [milestoneId, step]
@@ -63,6 +60,7 @@ const addRoutine = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
 
 
 
@@ -140,7 +138,82 @@ const getRoutines = async (req, res) => {
 };
 
 
+// Controller to get specific routine
+const getRoutine = async (req, res) => {
+    const { id } = req.params;  // Destructure 'id' from the request parameters
+    if (!id) {
+        return res.status(400).json({ error: "Routine ID is required" });
+    }
+
+    try {
+        // Query to fetch routine, milestones, and steps
+        const query = `
+            SELECT 
+                r.id AS routine_id, 
+                r.routine_name, 
+                r.routine_type, 
+                r.duration, 
+                r.routinedescription,
+                m.id AS milestone_id, 
+                m.milestone, 
+                s.id AS step_id, 
+                s.step
+            FROM routines r
+            LEFT JOIN milestones m ON r.id = m.routine_id
+            LEFT JOIN steps s ON m.id = s.milestone_id
+            WHERE r.id = $1
+            ORDER BY m.id, s.id;
+        `;
+
+        // Execute the query with the routine ID from the request parameters
+        const result = await client.query(query, [id]);
+
+        // Check if any data was returned
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Routine not found" });
+        }
+
+        // Structure the data to return
+        const routineData = {
+            id: result.rows[0].routine_id,
+            name: result.rows[0].routine_name,
+            type: result.rows[0].routine_type,
+            duration: result.rows[0].duration,
+            description: result.rows[0].routinedescription,
+            milestones: [],
+        };
+
+        const milestonesMap = new Map();
+
+        result.rows.forEach(row => {
+            // Add milestones if not already added
+            if (row.milestone_id && !milestonesMap.has(row.milestone_id)) {
+                milestonesMap.set(row.milestone_id, {
+                    id: row.milestone_id,
+                    name: row.milestone,
+                    steps: [],
+                });
+                routineData.milestones.push(milestonesMap.get(row.milestone_id));
+            }
+
+            // Add steps to the corresponding milestone
+            if (row.step_id) {
+                milestonesMap.get(row.milestone_id).steps.push({
+                    id: row.step_id,
+                    name: row.step,
+                });
+            }
+        });
+
+        // Send back the structured routine data
+        res.json(routineData);
+    } catch (error) {
+        console.error("Error fetching routine details:", error.message);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
 
 
 
-module.exports = { addRoutine , getRoutines };
+
+module.exports = { addRoutine , getRoutines, getRoutine };

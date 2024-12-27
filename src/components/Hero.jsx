@@ -1,5 +1,6 @@
 import React from 'react';
 import RoutineImage from '../images/hero-routine.png';
+import { Link } from 'react-router-dom';
 function Hero() {
     return (
         <>
@@ -14,9 +15,9 @@ function Hero() {
                             DailyPath helps you stay on track with your personal routines, manage milestones, and monitor your progress in a simple and effective way.
                         </p>
                         <div className="flex justify-center">
-                            <button className="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">
+                            <Link to='/routines' className="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">
                                 Start Your Routine
-                            </button>
+                            </Link>
                             
                         </div>
                     </div>

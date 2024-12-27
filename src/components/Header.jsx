@@ -13,7 +13,7 @@ function Header() {
                     </a>
                     <nav className="md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-gray-400 flex flex-wrap items-center text-base justify-center">
                         <Link to='/' className="mr-5 hover:text-gray-900 hover:scale-110">Home</Link>
-                        <Link to="/routines" className="mr-5 hover:text-gray-900 hover:scale-110">My Routines</Link>
+                        <Link to="/routines" className="mr-5 hover:text-gray-900 hover:scale-110"> Routines</Link>
                         <Link to="/milestones" className="mr-5 hover:text-gray-900 hover:scale-110">Milestones</Link>
                         <Link to="/progress" className="mr-5 hover:text-gray-900 hover:scale-110">Progress</Link>
                     </nav>
