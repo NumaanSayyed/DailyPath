@@ -19,7 +19,7 @@ function Hero() {
                     <img
                             className="hidden object-cover object-center rounded md:block"
                             alt="hero"
-                            src={RoutineImage}
+                            src={RoutineImage}a
                         />
                     </div>
                 </div>

@@ -17,16 +17,16 @@ function Footer() {
               </a>
               <p className="mt-2 ml-28 text-lg leading-8 text-gray-1000">Find us on any of these platforms, we respond 1-2 business days.
               <div className="mt-6 lg:mb-0 mb-6">
-                <button className="bg-white text-lightBlue-400 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2" type="button">
+                <button className="bg-white text-lightBlue-400 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2 hover:scale-125 transition-transform" type="button">
                   <i className="fab fa-twitter" />
                 </button>
-                <button className="bg-white text-lightBlue-600 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2" type="button">
+                <button className="bg-white text-lightBlue-600 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2 hover:scale-125 transition-transform" type="button">
                   <i className="fab fa-facebook-square" />
                 </button>
-                <button className="bg-white text-pink-400 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2" type="button">
+                <button className="bg-white text-pink-400 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2 hover:scale-125 transition-transform" type="button">
                   <i className="fab fa-dribbble" />
                 </button>
-                <button className="bg-white text-blueGray-800 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2" type="button">
+                <button className="bg-white text-blueGray-800 shadow-lg font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2 hover:scale-125 transition-transform" type="button">
                   <i className="fab fa-github" />
                 </button>
               </div>
@@ -39,9 +39,9 @@ function Footer() {
               <div className="lg:w-1/4 md:w-1/2 w-full px-4">
                 <h2 className="title-font font-[500] font-yeseva text-xl  mb-3">Useful links</h2>
                 <nav className="list-none mb-10 leading-10 text-gray-1000 text-base font-[400] font-OpenSans">
-                  <li><NavLink to="/" className="">Home</NavLink></li>
-                  <li><NavLink to="milestones" className="">Milestones</NavLink></li>
-                  <li><NavLink to="milestones" className="">Contact us</NavLink></li>
+                  <li><NavLink to="/" className="utransition-all hover:underline hover:underline-offset-2 ">Home</NavLink></li>
+                  <li><NavLink to="signup" className="transition-all hover:underline hover:underline-offset-2">Sign up</NavLink></li>
+                  <li><NavLink to="milestones" className="transition-all hover:underline hover:underline-offset-2">Contact us</NavLink></li>
                   
                 </nav>
               </div>
@@ -50,9 +50,9 @@ function Footer() {
               <div className="lg:w-1/4 md:w-1/2 w-full px-4">
                 <h2 className="title-font font-[500] text-xl   mb-3">Other Resources </h2>
                 <nav className="list-none mb-10 text-gray-1000 leading-10 text-base font-[400] ">
-                <li><NavLink to="/" className="">MIT License</NavLink></li>
-                <li><NavLink to="milestones" className="">Terms & conditions</NavLink></li>
-                <li><NavLink to="milestones" className="">Privacy policy</NavLink></li>
+                <li><NavLink to="/" className="transition-all hover:underline hover:underline-offset-2 ">MIT License</NavLink></li>
+                <li><NavLink to="milestones" className="transition-all hover:underline hover:underline-offset-2 ">Terms & conditions</NavLink></li>
+                <li><NavLink to="milestones" className="transition-all hover:underline hover:underline-offset-2 ">Privacy policy</NavLink></li>
                 </nav>
               </div>
             </div>
@@ -68,6 +68,7 @@ function Footer() {
           </div>
           
       </footer>
+      
     </>
   );
 }

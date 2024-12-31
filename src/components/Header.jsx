@@ -59,14 +59,14 @@ function Header() {
                                 </li>
                                 <li>
                                     <NavLink
-                                        to="/milestones"
+                                        to="/contact"
                                         className={({ isActive }) =>
                                             isActive
                                                 ? 'block py-2 px-3 md:p-0 text-blue-700 font-bold transform transition-transform hover:scale-110'
                                                 : 'block py-2 px-3 md:p-0 text-gray-900 rounded font-bold md:font-normal hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent transform transition-transform hover:scale-110'
                                         }
                                     >
-                                        MileStones
+                                        Contact Us 
                                     </NavLink>
                                 </li>
                                 <li>
