@@ -1,3 +1,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* Perspective container */
+.perspective {
+    perspective: 1000px;
+}
+
+/* Flip card inner container */
+.group .relative {
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+/* Front and Back side styles */
+.backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden; /* For Safari */
+}
+
+.group:hover .relative {
+    transform: rotateY(180deg);
+}
+
+/* Front side of the card */
+.group .relative > .absolute:first-child {
+    z-index: 2;
+    transform: rotateY(0deg);
+    -webkit-transform: rotateY(0deg); /* Safari compatibility */
+}
+
+/* Back side of the card */
+.group .relative > .absolute:last-child {
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg); /* Safari compatibility */
+}
+
+
+
+
+

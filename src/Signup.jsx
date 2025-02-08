@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import axios from 'axios';
 import swal from 'sweetalert';
+import { NavLink } from 'react-router-dom';
 
 function Signup() {
-
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -11,62 +11,58 @@ function Signup() {
     lastName: "",
     phone: "",
     company: "",
-    interests: [], // To store selected interests
-
+    interests: [],
   });
 
   const handleChange = (e) => {
-    const value = e.target.value;
+    const { name, value } = e.target;
     setData({
       ...data,
-      [e.target.name]: value
+      [name]: value
     });
   };
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    const userData = {
-      email: data.email,
-      password: data.password,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      phone: data.phone,
-      company: data.company,
-      interests: data.interests,
 
-    };
+    axios.post('/api/signup', data)
+      .then((response) => {
+        const {user} = response.data;
+        // store the token in local storage
+        localStorage.setItem(
+          'auth',
+          JSON.stringify({
+              user,
+          })
+      );
+        console.log("Data Submitted Successfully ", response.data);
+        swal({
+          title: "Account Created!",
+          text: "Your account has been successfully created.",
+          icon: "success",
+          button: "OK",
+        });
 
-    axios.post('/api/signup', userData).then((response) => {
-      console.log("Data Submitted Successfully ", response.data);
-      swal({
-        title: "Account Created!",
-        text: "Your account has been successfully created.",
-        icon: "success",
-        button: "OK",
+        setData({
+          email: "",
+          password: "",
+          firstName: "",
+          lastName: "",
+          phone: "",
+          company: "",
+          interests: [],
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        swal({
+          title: "Error!",
+          text: "Something went wrong. Please try again.",
+          icon: "error",
+          button: "OK",
+        });
       });
-      // Reset form data
-      setData({
-        email: "",
-        password: "",
-        firstName: "",
-        lastName: "",
-        phone: "",
-        company: "",
-        interests: "",
-      });
-
-    }).catch((error) => {
-      console.error(error);
-      swal({
-        title: "Error!",
-        text: "Something went wrong. Please try again.",
-        icon: "error",
-        button: "OK",
-      });
-    });
-
-  }
+  };
 
   const handleInterestToggle = (interest) => {
     setData((prevData) => {
@@ -77,165 +73,152 @@ function Signup() {
           ? prevData.interests.filter((item) => item !== interest)
           : [...prevData.interests, interest],
       };
-    })
-  }
+    });
+  };
 
   return (
-    <>
-      <div className="max-w-md mx-auto my-8">
-        <h2 className="text-2xl font-bold text-center text-gray-900 mb-4">Sign Up</h2>
-        <p className="text-center text-gray-600 mb-8">
-          Join us today to get exclusive access to features and updates. Fill in your details below to create your account.
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 py-12">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-gray-800 text-center mb-4">
+          Create an Account
+        </h1>
+        <p className="text-gray-500 text-center mb-6">
+          "Join us today to get exclusive access to features and updates."
         </p>
-
-        {/* form section for clients to fill in details */}
-        <form className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-8 border border-gray-200">
-          {/* Email */}
-          <div className="relative z-0 w-full mb-6 group">
+        <form onSubmit={handleSubmit}>
+          {/* Email Input */}
+          <div className="mb-4">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Email Address
+            </label>
             <input
               type="email"
               name="email"
               id="email"
               value={data.email}
               onChange={handleChange}
-              className="block py-3 px-4 w-full text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 peer"
-              placeholder=""
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter your email"
               required
             />
-            <label
-              htmlFor="email"
-              className="absolute text-sm text-gray-500 top-3 left-4 transform scale-100 transition-all duration-200 ease-in-out peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-8 peer-focus:scale-75 peer-focus:text-blue-600"
-            >
-              Email Address
-            </label>
           </div>
-
-          {/* Password */}
-          <div className="relative z-0 w-full mb-6 group">
+          {/* Password Input */}
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Password
+            </label>
             <input
               type="password"
               name="password"
               id="password"
               value={data.password}
               onChange={handleChange}
-              className="block py-3 px-4 w-full text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 peer"
-              placeholder=" "
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter your password"
               required
             />
-            <label
-              htmlFor="password"
-              className="absolute text-sm text-gray-500 top-3 left-4 transform scale-100 transition-all duration-200 ease-in-out peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-8 peer-focus:scale-75 peer-focus:text-blue-600"
-            >
-              Password
-            </label>
           </div>
-
-          {/* First and Last Name */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="relative z-0 w-full mb-6 group">
+          {/* First Name and Last Name */}
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                First Name
+              </label>
               <input
                 type="text"
                 name="firstName"
                 id="firstName"
                 value={data.firstName}
                 onChange={handleChange}
-                className="block py-3 px-4 w-full text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 peer"
-                placeholder=" "
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="First Name"
                 required
               />
-              <label
-                htmlFor="firstName"
-                className="absolute text-sm text-gray-500 top-3 left-4 transform scale-100 transition-all duration-200 ease-in-out peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-8 peer-focus:scale-75 peer-focus:text-blue-600"
-              >
-                First Name
-              </label>
             </div>
-            <div className="relative z-0 w-full mb-6 group">
+            <div>
+              <label
+                htmlFor="lastName"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Last Name
+              </label>
               <input
                 type="text"
                 name="lastName"
                 id="lastName"
                 value={data.lastName}
                 onChange={handleChange}
-                className="block py-3 px-4 w-full text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 peer"
-                placeholder=" "
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Last Name"
                 required
               />
-              <label
-                htmlFor="lastName"
-                className="absolute text-sm text-gray-500 top-3 left-4 transform scale-100 transition-all duration-200 ease-in-out peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-8 peer-focus:scale-75 peer-focus:text-blue-600"
-              >
-                Last Name
-              </label>
             </div>
           </div>
-
-          {/* Phone and Company */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="relative z-0 w-full mb-6 group">
+          {/* Phone Number and Company */}
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Phone Number
+              </label>
               <input
                 type="tel"
                 name="phone"
                 id="phone"
                 value={data.phone}
                 onChange={handleChange}
-                className="block py-3 px-4 w-full text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 peer"
-                placeholder=" "
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Phone Number"
                 required
               />
-              <label
-                htmlFor="phone"
-                className="absolute text-sm text-gray-500 top-3 left-4 transform scale-100 transition-all duration-200 ease-in-out peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-8 peer-focus:scale-75 peer-focus:text-blue-600"
-              >
-                Phone Number
-              </label>
             </div>
-            <div className="relative z-0 w-full mb-6 group">
+            <div>
+              <label
+                htmlFor="company"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Company
+              </label>
               <input
                 type="text"
                 name="company"
                 id="company"
                 value={data.company}
                 onChange={handleChange}
-                className="block py-3 px-4 w-full text-sm text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 peer"
-                placeholder=" "
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Company"
                 required
               />
-              <label
-                htmlFor="company"
-                className="absolute text-sm text-gray-500 top-3 left-4 transform scale-100 transition-all duration-200 ease-in-out peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-8 peer-focus:scale-75 peer-focus:text-blue-600"
-              >
-                Company
-              </label>
             </div>
           </div>
-
-          {/* Interest Areas */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Interest Areas</label>
+          {/* Interests */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Interest Areas
+            </label>
             <div className="flex flex-wrap gap-3">
               {[
-                "Health Care",
-                "Weight Loss",
-                "Muscle Building",
-                "Yoga and Meditation",
-                "Productivity",
-                "Skill Development",
-                "Time Management",
-                "Mental Wellness",
-                "Diet and Nutrition",
-                "Sports Training",
-                "Financial Planning",
-                "Language Learning",
+                "Health Care", "Weight Loss", "Muscle Building", "Yoga and Meditation", "Productivity", "Skill Development",
+                "Time Management", "Mental Wellness", "Diet and Nutrition", "Sports Training", "Financial Planning", "Language Learning"
               ].map((interest) => (
                 <button
                   key={interest}
                   type="button"
                   onClick={() => handleInterestToggle(interest)}
-                  aria-pressed={data.interests.includes(interest)}
                   className={`px-4 py-2 rounded-full text-sm font-medium ${data.interests.includes(interest)
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-900"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-900"
                     }`}
                 >
                   {interest}
@@ -243,30 +226,39 @@ function Signup() {
               ))}
             </div>
           </div>
-
           {/* Submit Button */}
           <div className="text-center">
             <button
               type="submit"
               className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              onClick={handleSubmit}
             >
               Submit
             </button>
           </div>
+          <div className="text-center mt-6">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <NavLink
+                to="/login"
+                className="text-blue-600 hover:underline font-medium"
+              >
+                Login here
+              </NavLink>
+            </p>
+            <p className="text-sm text-gray-600">
+              Want to login as Admin ?{" "}
+              <NavLink
+                to="/AdminSignup"
+                className="text-blue-600 hover:underline font-medium"
+              >
+                Sign up here
+              </NavLink>
+            </p>
+          </div>
         </form>
-
-
-
-
-
-
       </div>
-
-
-
-    </>
-  )
+    </div>
+  );
 }
 
-export default Signup
+export default Signup;

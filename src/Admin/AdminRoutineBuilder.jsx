@@ -3,72 +3,71 @@ import axios from 'axios';
 
 const AdminRoutineBuilder = () => {
     const [routineName, setRoutineName] = useState("");
-    const [routineType, setRoutineType] = useState(""); // New State for Routine Type
-    const [duration, setDuration] = useState(0);
+    const [routineType, setRoutineType] = useState("");
+    const [duration, setDuration] = useState();
     const [milestones, setMilestones] = useState([]);
     const [newMilestone, setNewMilestone] = useState("");
-    const [steps, setSteps] = useState([]);
-    const [newStep, setNewStep] = useState("");
-    const [routineDescription, setRoutineDescription] = useState(""); // New State for Description
+    const [routineDescription, setRoutineDescription] = useState("");
 
     const handleAddMilestone = () => {
         if (newMilestone.trim() !== "") {
-            setMilestones([...milestones, newMilestone]);
+            setMilestones([...milestones, { 
+                name: newMilestone.trim(), 
+                steps: [],
+                newStep: ""  // Each milestone now has its own step input state
+            }]);
             setNewMilestone("");
         }
     };
 
-    const handleAddStep = () => {
-        if (newStep.trim() !== "") {
-            setSteps([...steps, newStep]);
-            setNewStep("");
+    const handleMilestoneStepChange = (milestoneIndex, value) => {
+        const updatedMilestones = [...milestones];
+        updatedMilestones[milestoneIndex].newStep = value;
+        setMilestones(updatedMilestones);
+    };
+
+    const handleAddStep = (milestoneIndex) => {
+        const updatedMilestones = [...milestones];
+        const currentMilestone = updatedMilestones[milestoneIndex];
+        
+        if (currentMilestone.newStep.trim() !== "") {
+            currentMilestone.steps.push(currentMilestone.newStep.trim());
+            currentMilestone.newStep = "";  // Clear input after adding
+            setMilestones(updatedMilestones);
         }
     };
 
     const routineTypes = [
-        "Health Care",
-        "Weight Loss",
-        "Muscle Building",
-        "Yoga and Meditation",
-        "Productivity",
-        "Skill Development",
-        "Time Management",
-        "Mental Wellness",
-        "Diet and Nutrition",
-        "Sports Training",
-        "Financial Planning",
-        "Language Learning",
+        "Health Care", "Weight Loss","Weight Gain","Muscle Building","Strength Training", "Cardio", "High-Intensity Training", "Yoga and Meditation","Plyometrics", "Calisthenics", "Mixed Training",
+        "Productivity", "Skill Development", "Time Management", "Mental Wellness",
+        "Diet and Nutrition", "Sports Training", "Financial Planning", "Language Learning"
     ];
 
     const handleSubmitRoutine = async () => {
-        const routineData = {
+        // Remove temporary newStep property before submitting
+        const submitData = {
             routineName,
-            routineType, // You can add this to the form
+            routineType,
             duration,
-            routineDescription, // Add this to the form data
-            milestones,
-            steps,
+            routineDescription,
+            milestones: milestones.map(({ newStep, ...rest }) => rest)
         };
 
         try {
-            const response = await axios.post('/api/routine', routineData);
+            const response = await axios.post('/api/routine', submitData);
             console.log('Routine added successfully:', response.data);
-
-            // Show success message if the response is successful
             alert('Routine added successfully!');
+            
+            // Reset form
+            setRoutineName("");
+            setRoutineType("");
+            setDuration(0);
+            setMilestones([]);
+            setRoutineDescription("");
         } catch (error) {
-            // Check if there's a response or just a network error
-            if (error.response) {
-                // If there's a response with error details from the backend
-                console.error('Backend error:', error.response.data);
-                alert(`Error from server: ${error.response.data.message || 'Unknown error'}`);
-            } else {
-                // If it's a network error (e.g., no connection to the backend)
-                console.error('Network Error:', error.message);
-                alert('Network Error: Please check your backend or try again later.');
-            }
+            console.error('Submission error:', error);
+            alert(error.response?.data?.message || 'Error submitting routine');
         }
-
     };
 
     return (
@@ -78,129 +77,108 @@ const AdminRoutineBuilder = () => {
 
                 {/* Routine Name */}
                 <div className="mb-4">
-                    <label className="block text-gray-600 font-medium mb-2" htmlFor="routineName">
-                        Routine Name
-                    </label>
+                    <label className="block text-gray-600 font-medium mb-2">Routine Name</label>
                     <input
                         type="text"
-                        id="routineName"
                         value={routineName}
                         onChange={(e) => setRoutineName(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+                        className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
                         placeholder="Enter routine name"
                     />
                 </div>
 
                 {/* Routine Type */}
                 <div className="mb-4">
-                    <label className="block text-gray-600 font-medium mb-2" htmlFor="routineType">
-                        Routine Type
-                    </label>
+                    <label className="block text-gray-600 font-medium mb-2">Routine Type</label>
                     <select
-                        id="routineType"
                         value={routineType}
                         onChange={(e) => setRoutineType(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+                        className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
                     >
                         <option value="">Select a type</option>
                         {routineTypes.map((type, index) => (
-                            <option key={index} value={type}>
-                                {type}
-                            </option>
+                            <option key={index} value={type}>{type}</option>
                         ))}
                     </select>
                 </div>
 
                 {/* Duration */}
                 <div className="mb-4">
-                    <label className="block text-gray-600 font-medium mb-2" htmlFor="duration">
-                        Duration (in weeks)
-                    </label>
+                    <label className="block text-gray-600 font-medium mb-2">Duration (weeks)</label>
                     <input
                         type="number"
-                        id="duration"
                         value={duration}
-                        onChange={(e) => setDuration(Number(e.target.value) || "")}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-                        placeholder="Enter duration (e.g., 8)"
+                        onChange={(e) => setDuration(Number(e.target.value))}
+                        className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+                        placeholder="Enter duration in weeks"
                     />
                 </div>
 
                 {/* Routine Description */}
                 <div className="mb-4">
-                    <label className="block text-gray-600 font-medium mb-2" htmlFor="routineDescription">
-                        Routine Description
-                    </label>
+                    <label className="block text-gray-600 font-medium mb-2">Description</label>
                     <textarea
-                        id="routineDescription"
                         value={routineDescription}
                         onChange={(e) => setRoutineDescription(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-                        placeholder="Enter a brief description of the routine"
+                        className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+                        placeholder="Describe the routine"
                         rows="4"
                     />
                 </div>
 
-                {/* Milestones */}
+                {/* Milestones Section */}
                 <div className="mb-6">
-                    <label className="block text-gray-600 font-medium mb-2">
-                        Weekly/Bi-Weekly Milestones
-                    </label>
-                    <div className="flex flex-col sm:flex-row items-center gap-2">
+                    <label className="block text-gray-600 font-medium mb-2">Milestones</label>
+                    <div className="flex gap-2 mb-4">
                         <input
                             type="text"
                             value={newMilestone}
                             onChange={(e) => setNewMilestone(e.target.value)}
-                            className="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-                            placeholder="Enter milestone"
+                            className="flex-1 px-4 py-2 border rounded-md"
+                            placeholder="New milestone name"
                         />
                         <button
                             onClick={handleAddMilestone}
                             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                         >
-                            Add
+                            Add Milestone
                         </button>
                     </div>
-                    <ul className="mt-3 list-disc pl-5">
-                        {milestones.map((milestone, index) => (
-                            <li key={index} className="text-gray-600">{milestone}</li>
-                        ))}
-                    </ul>
+
+                    {milestones.map((milestone, index) => (
+                        <div key={index} className="mb-4 p-4 border rounded-md">
+                            <div className="font-semibold mb-2">{milestone.name}</div>
+                            
+                            <div className="flex gap-2 mb-2">
+                                <input
+                                    type="text"
+                                    value={milestone.newStep}
+                                    onChange={(e) => handleMilestoneStepChange(index, e.target.value)}
+                                    className="flex-1 px-4 py-2 border rounded-md"
+                                    placeholder="Add step to milestone"
+                                />
+                                <button
+                                    onClick={() => handleAddStep(index)}
+                                    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                                >
+                                    Add Step
+                                </button>
+                            </div>
+
+                            <ul className="list-disc pl-6">
+                                {milestone.steps.map((step, stepIndex) => (
+                                    <li key={stepIndex} className="text-gray-600">{step}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Steps */}
-                <div className="mb-6">
-                    <label className="block text-gray-600 font-medium mb-2">
-                        Steps for Each Milestone
-                    </label>
-                    <div className="flex flex-col sm:flex-row items-center gap-2">
-                        <input
-                            type="text"
-                            value={newStep}
-                            onChange={(e) => setNewStep(e.target.value)}
-                            className="flex-grow px-4 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-                            placeholder="Enter step"
-                        />
-                        <button
-                            onClick={handleAddStep}
-                            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-                        >
-                            Add
-                        </button>
-                    </div>
-                    <ul className="mt-3 list-disc pl-5">
-                        {steps.map((step, index) => (
-                            <li key={index} className="text-gray-600">{step}</li>
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Submit Button */}
                 <button
                     onClick={handleSubmitRoutine}
-                    className="w-full bg-indigo-500 text-white py-3 rounded-md hover:bg-indigo-600 transition"
+                    className="w-full bg-indigo-600 text-white py-3 rounded-md hover:bg-indigo-700 transition"
                 >
-                    Submit Routine
+                    Create Routine
                 </button>
             </div>
         </div>
